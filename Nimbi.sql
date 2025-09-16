@@ -34,8 +34,6 @@ inner join dim_plan_academico c on b.CODPLAN = c.LLAVE_MALLA
 left join dim_colegio e on a.RBD_COLEGIO = e.RBD_COLEGIO
 where NIVEL_GLOBAL ='pregrado';
 
-select * from dim_alumno
-
 
 --4. Notas y asistencia
     select CODCLI,RUT, NOMBRE_RAMO, COD_RAMO, COD_RAMO_ACTA, NOMBRES, PATERNO, MATERNO, ASISTENCIA,
@@ -47,31 +45,8 @@ where ano  >= 2022
 and NIVEL_GLOBAL = 'pregrado'
 AND ESTADO_ACADEMICO IN ('VIGENTE', 'ELIMINADO', 'SUSPENDIDO');
 
---5. Inicio de semestre
-    select CODCLI, ANO_INGRESO_INSTITUCION, ANO_COHORTE, MATRICULA, FECHA_MATRICULA
-from PR_MATRICULA
-where ANO_INGRESO_INSTITUCION >= 2022
-and TIPO_CARRERA = 'PREGRADO'
-and ESTADO_ACADEMICO IN ('VIGENTE', 'ELIMINADO', 'SUSPENDIDO');
-;
 
---6. Fin de semestre
-select b.*, case when a.CODCLI is null then 'no egresa' else 'egresa' end as marca_egreso
-		, case when C.CODCLI is null then 'no suspende' else 'suspende' end as marca_suspendido
-		, case when d.CODCLI is null then 'no eliminado' else 'eliminado' end as marca_suspendido
-from (
-select ano, periodo, CODCLI, RUT, count(1) as asig_inscritas
-from PR_ALUMNO_RAMO
-where ano between 2022 and 2025
-and NIVEL_GLOBAL = 'pregrado'
-group by ano, periodo, CODCLI, RUT ) b
-left join PR_EGRESO a on a.CODCLI = b.CODCLI and a.ANO = b.ANO and a.PERIODO = b.PERIODO	--20955
-left join (select codcli, ano, periodo,estacad, ROW_NUMBER() over(partition by codcli, ano, periodo order by fechareg desc ) as orden
-			from PR_ESTADOS_ACADEMICOS where estacad = 'SUSPENDIDO') c
-on c.CODCLI = b.CODCLI and c.ANO = b.ANO and c.PERIODO = b.PERIODO and c.orden = 1
-left join (select codcli, ano, periodo,estacad, ROW_NUMBER() over(partition by codcli, ano, periodo order by fechareg desc ) as orden
-			from PR_ESTADOS_ACADEMICOS where estacad = 'ELIMINADO') d
-on d.CODCLI = b.CODCLI and d.ANO = b.ANO and d.PERIODO = b.PERIODO and d.orden = 1;
+;
 --7. Actividad en el Moodle
 
 --8. Información demográfica
@@ -80,30 +55,6 @@ from dim_alumno a
 inner join dim_matricula b on a.RUT = b.RUT
 inner join dim_plan_academico c on b.CODPLAN = c.LLAVE_MALLA
 where NIVEL_GLOBAL ='pregrado';
-
---9. Datos académicos
-SELECT
-  mt.CODCLI,
-  mt.NOMBRE_CARRERA,
-  mt.CODIGO_PLAN,
-  mt.COD_CARRERA,
-  mt.JORNADA,
-  mt.MODALIDAD,
-  'VIGENTE' AS ESTADO_ACADEMICO, -- visible siempre como VIGENTE
-  mt.ANO_INGRESO_INSTITUCION,
-  mt.TIPO_CARRERA,
-  COALESCE(NULLIF(LTRIM(RTRIM(mt.SITUACION)), ''), 'ALUMNO REGULAR') AS SITUACION,
-  CASE
-    WHEN mt.ESTADO_ACADEMICO = 'VIGENTE' THEN 'AVANCE ACADEMICO'
-    WHEN mt.ESTADO_ACADEMICO IN ('ELIMINADO', 'SUSPENDIDO') THEN 'REINGRESO'
-    ELSE 'SIN CLASIFICAR'
-  END AS TIPO_SEGUIMIENTO,
-  mt.PERIODO
-FROM PR_MATRICULA mt
-WHERE
-    mt.ANO_INGRESO_INSTITUCION >= 2022
-  AND mt.TIPO_CARRERA = 'PREGRADO'
-  AND mt.ESTADO_ACADEMICO IN ('VIGENTE', 'ELIMINADO', 'SUSPENDIDO');
 
 
 
