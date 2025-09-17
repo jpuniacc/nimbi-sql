@@ -1,7 +1,7 @@
--- Query unificada: Notas y Asistencias por ID_SECCION
+-- Query unificada: Notas y Asistencias por ID_SECCION (CONECTORINTEGRACION)
 SELECT
     -- === INFORMACIÓN BÁSICA ===
-    N.ANO,
+    N.ANO as ANIO,
     N.PERIODO,
     N.CODCLI,
     N.RUT,
@@ -96,7 +96,7 @@ SELECT
     -- === METADATA ===
     CONVERT(VARCHAR(10), GETDATE(), 23) AS FECHA_CORTE
 
-FROM PR_NOTAS N
+FROM ConectorIntegracion.dbo.PR_NOTAS N
 
 -- LEFT JOIN para ponderaciones
 LEFT JOIN (

@@ -1,0 +1,28 @@
+--02. Encuestas docentes (ConectorIntegración)
+select
+    NOMBRE_ENCUESTA,
+    ANO as ANIO,
+    PERIODO,
+    NRO_PREGUNTA,
+    PREGUNTA,
+    CODRAMO,
+    NOMBRE_RAMO,
+    SECCION_RAMO,
+    CODCARR,
+    NOMBRE_CARRERA,
+    RUT_DOCENTE,
+    NOMBRE_DOCENTE,
+    CODCLI,
+    NOMBRE_USUARIO + '@uniacc.edu' as NOMBRE_USUARIO,
+    CODRESPUESTA,
+    ID_RESP,
+    RESPUESTA,
+    OPCION,
+    TEXTOLIBRE,
+    OBSERVACION,
+    JORNADA,
+    MODALIDAD,
+    NIVEL_GLOBAL,
+    CONVERT(VARCHAR(10), GETDATE(), 23) AS FECHA_CORTE
+from ConectorIntegracion.dbo.PR_ENCUESTAS
+where NIVEL_GLOBAL = 'PREGRADO';
