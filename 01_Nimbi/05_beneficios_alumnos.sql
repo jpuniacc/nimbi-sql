@@ -14,7 +14,7 @@ select ben.CODCLI,
            WHEN BEN.ESTADO_BENEFICIO IN ('ASIGNADO', '4') THEN 'ASIGNADO'
            ELSE 'RECHAZADO'
         END AS 'ESTADO_BENEFICIO'
-from DWH_DAI.dbo.ft_beneficios ben, DWH_DAI.dbo.dim_beneficios dim
+from [DWH_DAI_Server].DWH_DAI.dbo.ft_beneficios ben, [DWH_DAI_Server].DWH_DAI.dbo.dim_beneficios dim
 where ben.CODBEN = dim.CODBEN
     and ben.ANIO_BEN > 2022;
 

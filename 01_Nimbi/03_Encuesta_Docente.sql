@@ -1,5 +1,7 @@
---02. Encuestas docentes (ConectorIntegración)
-select
+--02. Encuestas docentes (ConectorIntegración) - Por Año
+DECLARE @fecha_corte VARCHAR(10) = CONVERT(VARCHAR(10), GETDATE(), 23);
+
+SELECT
     NOMBRE_ENCUESTA,
     ANO as ANIO,
     PERIODO,
@@ -23,6 +25,13 @@ select
     JORNADA,
     MODALIDAD,
     NIVEL_GLOBAL,
-    CONVERT(VARCHAR(10), GETDATE(), 23) AS FECHA_CORTE
-from ConectorIntegracion.dbo.PR_ENCUESTAS
-where NIVEL_GLOBAL = 'PREGRADO';
+    @fecha_corte AS FECHA_CORTE
+FROM ConectorIntegracion.dbo.PR_ENCUESTAS WITH (NOLOCK)
+WHERE NIVEL_GLOBAL = 'PREGRADO'
+    AND ANO = 2024;  -- Cambiar por cada año: 2022, 2023, 2024, 2025
+
+-- Para exportar cada año:
+-- ANO = 2025 → encuestas_2025.csv (752,011 registros)
+-- ANO = 2024 → encuestas_2024.csv (958,254 registros)
+-- ANO = 2023 → encuestas_2023.csv (909,909 registros)
+-- ANO = 2022 → encuestas_2022.csv (554,607 registros)
