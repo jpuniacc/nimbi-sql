@@ -25,7 +25,7 @@ select CODCLI,
        MONTO_ARANCEL_VENCIDAS,
        MONTO_MATRICULA_POR_VENCER,
        MONTO_ARANCEL_POR_VENCER
-from UConectores.dbo.REP_REPORTE_FINANZAS
+from [DWH_DAI_Server].UConectores.dbo.REP_REPORTE_FINANZAS
 order by PERIODO desc;
 
 
