@@ -28,7 +28,7 @@ SELECT
     @fecha_corte AS FECHA_CORTE
 FROM ConectorIntegracion.dbo.PR_ENCUESTAS WITH (NOLOCK)
 WHERE NIVEL_GLOBAL = 'PREGRADO'
-    AND ANO = 2024;  -- Cambiar por cada año: 2022, 2023, 2024, 2025
+    AND ANO = 2022;  -- Cambiar por cada año: 2022, 2023, 2024, 2025
 
 -- Para exportar cada año:
 -- ANO = 2025 → encuestas_2025.csv (752,011 registros)
