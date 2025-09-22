@@ -13,7 +13,9 @@ select ben.CODCLI,
            WHEN BEN.ESTADO_BENEFICIO IN ('APROBADO','2') THEN 'APROBADO'
            WHEN BEN.ESTADO_BENEFICIO IN ('ASIGNADO', '4') THEN 'ASIGNADO'
            ELSE 'RECHAZADO'
-        END AS 'ESTADO_BENEFICIO'
+        END AS 'ESTADO_BENEFICIO',
+        CONVERT(VARCHAR(10), GETDATE(), 23) AS FECHA_CORTE
+
 from [DWH_DAI_Server].DWH_DAI.dbo.ft_beneficios ben, [DWH_DAI_Server].DWH_DAI.dbo.dim_beneficios dim
 where ben.CODBEN = dim.CODBEN
     and ben.ANIO_BEN > 2022;

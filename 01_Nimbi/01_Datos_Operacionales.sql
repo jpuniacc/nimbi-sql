@@ -31,13 +31,35 @@ SELECT
     -- CAMPO NOT NULL - Solo verificar si está vacío
     CASE WHEN LTRIM(RTRIM(ISNULL(A.CODCLI, ''))) = '' THEN NULL ELSE A.CODCLI END AS CODCLI,
 
+    -- NUEVO CAMPO: NIVEL DEL ALUMNO (lógica inline temporal)
+    CASE WHEN LTRIM(RTRIM(ISNULL(A.CODCLI, ''))) = '' THEN NULL
+         ELSE (
+             -- Primero intenta obtener el nivel más bajo pendiente
+             SELECT ISNULL(
+                 (SELECT MIN(CONVERT(INT, COALESCE(c.nivel,0)))
+                  FROM UNIACC.dbo.ra_curric c
+                  INNER JOIN UNIACC.dbo.mt_alumno a2 ON c.codpestud = a2.CODPESTUD
+                  WHERE a2.codcli = A.CODCLI
+                    AND c.codramo NOT IN (SELECT codramo FROM UNIACC.dbo.ra_nota WHERE codcli = A.CODCLI AND estado IN ('A', 'E', 'I'))
+                    AND c.CLASERAMO = '2'),
+                 -- Si no hay pendientes, busca el nivel máximo cursado
+                 (SELECT MAX(CONVERT(INT, COALESCE(c.nivel,0)))
+                  FROM UNIACC.dbo.ra_curric c
+                  INNER JOIN UNIACC.dbo.mt_alumno a2 ON c.codpestud = a2.CODPESTUD
+                  WHERE a2.codcli = A.CODCLI
+                    AND c.codramo IN (SELECT codramo FROM UNIACC.dbo.ra_nota WHERE codcli = A.CODCLI AND estado IN ('A', 'E', 'I'))
+                    AND c.CLASERAMO = '2')
+             )
+         )
+    END AS NIVEL_ALUMNO,
+
     ING.ANO_INGRESO_INSTITUCION,
 
     -- CAMPO VARCHAR NULLABLE (nota como texto)
     CASE WHEN LTRIM(RTRIM(ISNULL(C.NOTAEM, ''))) = '' THEN NULL ELSE C.NOTAEM END AS NEM,
 
     -- CAMPO VARCHAR NOT NULL (año como texto)
-    CASE WHEN LTRIM(RTRIM(ISNULL(C.ANOEEM, ''))) = '' THEN NULL ELSE C.ANOEEM END AS FECHA_NEM,
+    CASE WHEN LTRIM(RTRIM(ISNULL(C.ANOEEM, ''))) = '' THEN NULL ELSE C.ANOEEM END AS ANIO_EGRESO_EM,
 
     CASE WHEN LTRIM(RTRIM(ISNULL(T.DESCRIPCION, ''))) = '' THEN NULL ELSE T.DESCRIPCION END AS TIPO_CARRERA,
     CASE WHEN LTRIM(RTRIM(ISNULL(A.ESTACAD, ''))) = '' THEN NULL ELSE A.ESTACAD END AS ESTADO_ACADEMICO,
