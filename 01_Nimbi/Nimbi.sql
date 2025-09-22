@@ -28,7 +28,7 @@ AND ESTADO_ACADEMICO IN ('VIGENTE', 'ELIMINADO', 'SUSPENDIDO');
 
 --3. Ingreso de nuevos estudiantes
 select distinct a.RUT,DV, e.*
-from dim_alumno a
+from  dim_alumno a
 inner join dim_matricula b on a.RUT = b.RUT
 inner join dim_plan_academico c on b.CODPLAN = c.LLAVE_MALLA
 left join dim_colegio e on a.RBD_COLEGIO = e.RBD_COLEGIO
