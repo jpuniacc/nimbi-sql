@@ -25,6 +25,7 @@ Este documento contiene la documentación detallada de todos los campos utilizad
 - **NOMBRE_FACULTAD**: Facultad de la carrera
 - **NOMBRE_ESCUELA**: Escuela específica
 - **NOMBRE_CARRERA**: Carrera que cursa el estudiante
+- **DURACION_CARRERA**: Duración de la carrera en semestres
 - **JORNADA**: Modalidad horaria (Diurno/Vespertino/Weekend)
 - **NIVEL_ALUMNO**: Nivel académico actual (1°, 2°, 3°, etc.)
 
