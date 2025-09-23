@@ -30,10 +30,3 @@ SELECT RUT,
        ANO_INGRESO_INSTITUCION
 FROM datos_unicos
 WHERE rn = 1;
-
-
-
-
-SELECT DESC_COLEGIO, COMUNA
-     FROM [DWH_DAI_Server].DWH_DAI.dbo.dim_colegio
-     WHERE RBD_COLEGIO = '4708'; -- Cambia por un valor real

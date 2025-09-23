@@ -24,14 +24,27 @@ Este documento contiene la documentación detallada de todos los campos utilizad
 - **ANO_INGRESO_INSTITUCION**: Año de primer ingreso a UNIACC
 - **NOMBRE_FACULTAD**: Facultad de la carrera
 - **NOMBRE_ESCUELA**: Escuela específica
+- **COD_CARRERA**: Código de la carrera
 - **NOMBRE_CARRERA**: Carrera que cursa el estudiante
-- **DURACION_CARRERA**: Duración de la carrera en semestres
+- **CODIGO_PLAN**: Código del plan de estudios
+- **NOMBRE_PLAN**: Nombre del plan de estudios
+- **DURACION**: Duración de la carrera en semestres (calculada desde currículum)
 - **JORNADA**: Modalidad horaria (Diurno/Vespertino/Weekend)
 - **NIVEL_ALUMNO**: Nivel académico actual (1°, 2°, 3°, etc.)
 
 ### 📋 **CAMPOS DE EDUCACIÓN MEDIA**
 - **NEM**: Promedio de Notas de Enseñanza Media
 - **ANO_EGRESO_EM**: Año de egreso de enseñanza media
+
+### 📋 **RESULTADOS PRUEBAS DE ADMISIÓN**
+- **PAAVERBAL**: Puntaje PAA Verbal
+- **PAAMATEMAT**: Puntaje PAA Matemáticas
+- **PAAHISGEO**: Puntaje PAA Historia y Geografía
+- **PSUVERBAL**: Puntaje PSU Verbal
+- **PSUMATEMAT**: Puntaje PSU Matemáticas
+- **PSUHISGEO**: Puntaje PSU Historia y Geografía
+- **TIPOPRUEBA**: Tipo de prueba rendida (PAA/PSU/PAES)
+- **PROM_PRUEBA**: Promedio general de la prueba
 
 ### 📋 **CAMPOS DE ESTADO ACADÉMICO**
 - **TIPO_CARRERA**: Tipo de programa académico
@@ -292,68 +305,37 @@ El análisis se realiza por **CODCLI** (matrícula específica) considerando que
 
 ---
 
-## 📊 03 - Ingreso de Nuevos Estudiantes (Optimizada)
+## 📊 09 - Datos Colegio Alumno
 
 ### 📋 **INFORMACIÓN BÁSICA DEL ESTUDIANTE**
-- **RUT**: RUT del estudiante sin dígito verificador
-- **DV**: Dígito verificador del RUT
-- **NOMBRE_COMPLETO**: Nombre completo del estudiante (nombres + apellidos)
-
-### 📋 **INFORMACIÓN ACADÉMICA UNIACC**
-- **ANO_INGRESO_INSTITUCION**: Año de ingreso a UNIACC
-- **PERIODO_INGRESO**: Período de ingreso (1 o 2)
-- **NOMBRE_CARRERA**: Nombre del programa académico
-- **DURACION_CARRERA_SEMESTRES**: Duración formal de la carrera en semestres
-- **NIVEL_GLOBAL**: Nivel educativo (Pregrado/Postgrado)
+- **RUT**: RUT completo del estudiante (formato: RUT-DV)
 
 ### 📋 **INFORMACIÓN DEL COLEGIO DE ORIGEN**
-- **RBD_COLEGIO**: Código RBD del establecimiento educacional
+- **RBD_COLEGIO**: Código RBD del establecimiento educacional de procedencia
 - **NOMBRE_COLEGIO**: Nombre del establecimiento educacional
-- **TIPO_DEPENDENCIA**: Tipo de dependencia del colegio (Municipal/Particular/etc.)
-- **COMUNA_COLEGIO**: Comuna donde se ubica el colegio
-- **REGION_COLEGIO**: Región donde se ubica el colegio
-- **MODALIDAD_COLEGIO**: Modalidad educativa del colegio
+- **COMUNA**: Comuna donde se ubica el colegio
+- **TIPO_COLEGIO**: Clasificación del tipo de colegio (Urbano/Rural)
+- **ORIENTACION_RELIGIOSA**: Orientación religiosa del establecimiento
 
-### 📋 **INFORMACIÓN ACADÉMICA ENSEÑANZA MEDIA**
-- **NEM**: Notas de Enseñanza Media (promedio)
-- **RANKING_COLEGIO**: Ranking del estudiante en su colegio
-- **ANO_EGRESO_ENSEÑANZA_MEDIA**: Año de egreso de enseñanza media
+### 📋 **INFORMACIÓN ACADÉMICA UNIACC**
+- **ANO_INGRESO_INSTITUCION**: Año de primer ingreso a UNIACC
 
-### 📋 **CLASIFICACIONES CALCULADAS**
-- **TIPO_COLEGIO_CLASIFICADO**: Clasificación simplificada del tipo de colegio:
-  - **Municipal**: Colegios municipales
-  - **Particular Subvencionado**: Colegios particulares subvencionados
-  - **Particular Pagado**: Colegios particulares pagados
-  - **Otro**: Otros tipos de dependencia
-  - **Sin información**: Sin datos de colegio
+### 📋 **CARACTERÍSTICAS TÉCNICAS**
+- **Eliminación de duplicados**: Usa ROW_NUMBER() para eliminar registros duplicados por RUT
+- **Criterio de selección**: En caso de múltiples colegios, selecciona por ORDER BY RBD_COLEGIO
+- **Filtros aplicados**: Solo estudiantes de pregrado con ingreso >= 2022
 
-- **PROCEDENCIA_GEOGRAFICA**: Clasificación geográfica simplificada:
-  - **Metropolitana**: Región Metropolitana
-  - **Regiones**: Otras regiones del país
-  - **Sin información**: Sin datos de ubicación
+### 📋 **FUENTE DE DATOS**
+- **Tabla principal**: dim_alumno (Data Warehouse)
+- **Tablas relacionadas**: dim_matricula, dim_plan_academico, dim_colegio
+- **Tabla de apoyo**: MT_ALUMNO (para año de ingreso)
 
-### 📋 **CAMPOS DE CONTROL**
-- **FECHA_CORTE**: Fecha de ejecución de la consulta
+### 📋 **CONSIDERACIONES DE CALIDAD DE DATOS**
+- **Encoding issues**: Los campos DESC_COLEGIO y COMUNA pueden contener caracteres mal codificados (ej: "Ã'UBLE" en lugar de "ÑUBLE")
+- **Collation**: Campos con Modern_Spanish_CI_AS pero datos insertados con encoding incorrecto
+- **Solución recomendada**: Aplicar funciones REPLACE para corregir caracteres problemáticos
 
-**Propósito:** Análisis de procedencia educacional de estudiantes para identificar colegios "feeder", distribución geográfica, tipos de establecimientos de origen y correlaciones con rendimiento académico.
-
-### 📋 **CONSULTAS COMPLEMENTARIAS INCLUIDAS**
-
-#### **Resumen por Tipo de Colegio:**
-- **TIPO_COLEGIO**: Clasificación del tipo de dependencia
-- **CANTIDAD_ESTUDIANTES**: Número de estudiantes por tipo
-- **PORCENTAJE**: Distribución porcentual
-- **PROMEDIO_NEM**: Promedio de NEM por tipo de colegio
-- **PROMEDIO_RANKING**: Promedio de ranking por tipo de colegio
-
-#### **Top 15 Colegios:**
-- **RBD_COLEGIO**: Código del establecimiento
-- **NOMBRE_COLEGIO**: Nombre del establecimiento
-- **COMUNA**: Comuna del colegio
-- **REGION**: Región del colegio
-- **TIPO_DEPENDENCIA**: Tipo de dependencia
-- **CANTIDAD_ESTUDIANTES**: Número de estudiantes en UNIACC
-- **PROMEDIO_NEM_COLEGIO**: Promedio NEM de estudiantes del colegio
+**Propósito:** Proporcionar información básica de procedencia educacional de estudiantes UNIACC, enfocándose en la relación estudiante-colegio de origen para análisis de feeder schools y caracterización de la población estudiantil
 
 ---
 

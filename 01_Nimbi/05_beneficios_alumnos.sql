@@ -18,5 +18,5 @@ select ben.CODCLI,
 
 from [DWH_DAI_Server].DWH_DAI.dbo.ft_beneficios ben
 INNER JOIN [DWH_DAI_Server].DWH_DAI.dbo.dim_beneficios dim ON ben.CODBEN = dim.CODBEN
-WHERE ben.ANIO_BEN > 2022;
+WHERE ben.ANIO_BEN >= 2022;
 
