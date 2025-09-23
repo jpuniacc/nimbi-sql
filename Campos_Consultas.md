@@ -250,41 +250,110 @@ Este documento contiene la documentación detallada de todos los campos utilizad
 
 ---
 
-## 📊 08 - Alumnos Transferencias
+## 📊 08 - Alumnos Transferencias y Cambios de Carrera
 
 ### 📋 **INFORMACIÓN BÁSICA DEL ESTUDIANTE**
-- **CODCLI**: Código único interno del estudiante
-- **RUT**: RUT del estudiante
-- **NOMBRE_ALUMNO**: Nombre completo del estudiante
 - **ANO_INGRESO_INSTITUCION**: Año de primer ingreso a UNIACC
-- **TIPO_CARRERA**: Tipo de programa académico
-- **ESTADO_ACADEMICO**: Estado actual del estudiante
-- **NOMBRE_CARRERA**: Carrera que cursa el estudiante
+- **RUT**: RUT del estudiante
+- **CODCLI_ANTIGUO**: Código de matrícula anterior (NULL si viene de otra institución)
+- **CODCLI_NUEVO**: Código de matrícula actual donde se realizan las transferencias
 
-### 📋 **INFORMACIÓN DE TRANSFERENCIAS**
-- **estado_transferencia**: Indica si el estudiante tiene transferencias:
-  - **Sin transferencia**: No tiene asignaturas convalidadas
-  - **Con transferencia**: Tiene al menos una asignatura convalidada
-- **cantidad_transferencias**: Número total de asignaturas transferidas/convalidadas
+### 📋 **CONTADORES DE TRANSFERENCIAS POR TIPO**
+- **Cantidad_ramos_convalidados_CODCLI_NUEVO**: Número de ramos con concepto 'cv' (convalidaciones internas entre carreras de UNIACC)
+- **Cantidad_ramos_homologados_CODCLI_NUEVO**: Número de ramos con concepto 'ho' (homologaciones desde otras instituciones)
 
-### 📋 **MÉTRICAS ADICIONALES**
-- **primer_ano_transferencia**: Año en que realizó su primera transferencia
-- **ultimo_ano_transferencia**: Año en que realizó su última transferencia
+### 📋 **INFORMACIÓN DE CARRERAS**
+- **CARRERA_ANTERIOR**: Nombre de la carrera anterior (solo para cambios internos)
+- **CARRERA_NUEVA**: Nombre de la carrera actual donde se realizan las transferencias
 
-### 📋 **CLASIFICACIÓN POR VOLUMEN**
-- **clasificacion_transferencia**: Categorización según cantidad de transferencias:
-  - **Sin transferencias**: 0 asignaturas
-  - **Transferencia baja (1-3 ramos)**: Entre 1 y 3 asignaturas
-  - **Transferencia media (4-8 ramos)**: Entre 4 y 8 asignaturas
-  - **Transferencia alta (9+ ramos)**: 9 o más asignaturas
+### 📋 **CLASIFICACIÓN DEL TIPO DE CASO**
+- **tipo_caso**: Categorización del estudiante:
+  - **Homologación desde otra institución**: CODCLI_ANTIGUO es NULL, estudiante viene de fuera de UNIACC
+  - **Cambio de carrera interno**: CODCLI_ANTIGUO con valor, estudiante cambió de carrera dentro de UNIACC
 
-### 📋 **ANÁLISIS TEMPORAL**
-- **anos_con_transferencias**: Número de años durante los cuales el estudiante realizó transferencias
+### 📋 **CONCEPTOS DE TRANSFERENCIA**
+- **cv (Convalidación)**: Transferencias internas entre carreras dentro de UNIACC
+- **ho (Homologación)**: Reconocimiento de estudios realizados en otras instituciones educativas
+
+### 📋 **LÓGICA DE ANÁLISIS**
+El análisis se realiza por **CODCLI** (matrícula específica) considerando que:
+1. Un RUT puede tener múltiples CODCLI (diferentes carreras)
+2. Las transferencias se registran en el CODCLI donde se reconocen los estudios
+3. Se identifica la secuencia temporal de matrículas para determinar cambios de carrera
+4. Se diferencia entre transferencias internas (cv) y externas (ho)
+
+### 📋 **CASOS DE USO**
+- **Análisis de movilidad interna**: Estudiantes que cambian de carrera dentro de UNIACC
+- **Análisis de captación externa**: Estudiantes que ingresan con estudios previos de otras instituciones
+- **Evaluación de reconocimiento académico**: Volumen y patrones de convalidaciones y homologaciones
+- **Seguimiento de trayectorias académicas**: Identificación de rutas de estudio no lineales
+
+**Propósito:** Análisis detallado de transferencias y convalidaciones considerando cambios de carrera internos y reconocimiento de estudios externos, permitiendo evaluar la movilidad estudiantil y efectividad de procesos de reconocimiento académico.
+
+---
+
+## 📊 03 - Ingreso de Nuevos Estudiantes (Optimizada)
+
+### 📋 **INFORMACIÓN BÁSICA DEL ESTUDIANTE**
+- **RUT**: RUT del estudiante sin dígito verificador
+- **DV**: Dígito verificador del RUT
+- **NOMBRE_COMPLETO**: Nombre completo del estudiante (nombres + apellidos)
+
+### 📋 **INFORMACIÓN ACADÉMICA UNIACC**
+- **ANO_INGRESO_INSTITUCION**: Año de ingreso a UNIACC
+- **PERIODO_INGRESO**: Período de ingreso (1 o 2)
+- **NOMBRE_CARRERA**: Nombre del programa académico
+- **DURACION_CARRERA_SEMESTRES**: Duración formal de la carrera en semestres
+- **NIVEL_GLOBAL**: Nivel educativo (Pregrado/Postgrado)
+
+### 📋 **INFORMACIÓN DEL COLEGIO DE ORIGEN**
+- **RBD_COLEGIO**: Código RBD del establecimiento educacional
+- **NOMBRE_COLEGIO**: Nombre del establecimiento educacional
+- **TIPO_DEPENDENCIA**: Tipo de dependencia del colegio (Municipal/Particular/etc.)
+- **COMUNA_COLEGIO**: Comuna donde se ubica el colegio
+- **REGION_COLEGIO**: Región donde se ubica el colegio
+- **MODALIDAD_COLEGIO**: Modalidad educativa del colegio
+
+### 📋 **INFORMACIÓN ACADÉMICA ENSEÑANZA MEDIA**
+- **NEM**: Notas de Enseñanza Media (promedio)
+- **RANKING_COLEGIO**: Ranking del estudiante en su colegio
+- **ANO_EGRESO_ENSEÑANZA_MEDIA**: Año de egreso de enseñanza media
+
+### 📋 **CLASIFICACIONES CALCULADAS**
+- **TIPO_COLEGIO_CLASIFICADO**: Clasificación simplificada del tipo de colegio:
+  - **Municipal**: Colegios municipales
+  - **Particular Subvencionado**: Colegios particulares subvencionados
+  - **Particular Pagado**: Colegios particulares pagados
+  - **Otro**: Otros tipos de dependencia
+  - **Sin información**: Sin datos de colegio
+
+- **PROCEDENCIA_GEOGRAFICA**: Clasificación geográfica simplificada:
+  - **Metropolitana**: Región Metropolitana
+  - **Regiones**: Otras regiones del país
+  - **Sin información**: Sin datos de ubicación
 
 ### 📋 **CAMPOS DE CONTROL**
-- **fecha_consulta**: Fecha de ejecución de la consulta
+- **FECHA_CORTE**: Fecha de ejecución de la consulta
 
-**Propósito:** Análisis de estudiantes con transferencias y convalidaciones para evaluar patrones de movilidad estudiantil, impacto en progresión académica y efectividad de procesos de reconocimiento de estudios previos.
+**Propósito:** Análisis de procedencia educacional de estudiantes para identificar colegios "feeder", distribución geográfica, tipos de establecimientos de origen y correlaciones con rendimiento académico.
+
+### 📋 **CONSULTAS COMPLEMENTARIAS INCLUIDAS**
+
+#### **Resumen por Tipo de Colegio:**
+- **TIPO_COLEGIO**: Clasificación del tipo de dependencia
+- **CANTIDAD_ESTUDIANTES**: Número de estudiantes por tipo
+- **PORCENTAJE**: Distribución porcentual
+- **PROMEDIO_NEM**: Promedio de NEM por tipo de colegio
+- **PROMEDIO_RANKING**: Promedio de ranking por tipo de colegio
+
+#### **Top 15 Colegios:**
+- **RBD_COLEGIO**: Código del establecimiento
+- **NOMBRE_COLEGIO**: Nombre del establecimiento
+- **COMUNA**: Comuna del colegio
+- **REGION**: Región del colegio
+- **TIPO_DEPENDENCIA**: Tipo de dependencia
+- **CANTIDAD_ESTUDIANTES**: Número de estudiantes en UNIACC
+- **PROMEDIO_NEM_COLEGIO**: Promedio NEM de estudiantes del colegio
 
 ---
 

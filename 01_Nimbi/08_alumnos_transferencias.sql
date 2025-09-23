@@ -1,70 +1,91 @@
--- ===================================================================
--- CONSULTA: Información de Transferencias de Estudiantes
--- DESCRIPCIÓN: Identifica estudiantes con transferencias/convalidaciones
--- y calcula métricas relacionadas
--- ===================================================================
-
-SELECT
-    -- === INFORMACIÓN BÁSICA DEL ESTUDIANTE ===
-    m.CODCLI,
-    m.RUT,
-    m.NOMBRE_ALUMNO,
-    m.ANO_INGRESO_INSTITUCION,
-    m.TIPO_CARRERA,
-    m.ESTADO_ACADEMICO,
-    m.NOMBRE_CARRERA,
-
-    -- === INFORMACIÓN DE TRANSFERENCIAS ===
-    CASE
-        WHEN t.codcli IS NULL THEN 'Sin transferencia'
-        ELSE 'Con transferencia'
-    END AS estado_transferencia,
-
-    ISNULL(t.cantidad_transferencias, 0) AS cantidad_transferencias,
-
-    -- === MÉTRICAS ADICIONALES ===
-    t.primer_ano_transferencia,
-    t.ultimo_ano_transferencia,
-
-    -- === CLASIFICACIÓN POR VOLUMEN DE TRANSFERENCIAS ===
-    CASE
-        WHEN ISNULL(t.cantidad_transferencias, 0) = 0 THEN 'Sin transferencias'
-        WHEN t.cantidad_transferencias BETWEEN 1 AND 3 THEN 'Transferencia baja (1-3 ramos)'
-        WHEN t.cantidad_transferencias BETWEEN 4 AND 8 THEN 'Transferencia media (4-8 ramos)'
-        WHEN t.cantidad_transferencias >= 9 THEN 'Transferencia alta (9+ ramos)'
-    END AS clasificacion_transferencia,
-
-    -- === ANÁLISIS TEMPORAL ===
-    CASE
-        WHEN t.primer_ano_transferencia IS NOT NULL AND t.ultimo_ano_transferencia IS NOT NULL
-        THEN t.ultimo_ano_transferencia - t.primer_ano_transferencia + 1
-        ELSE 0
-    END AS anos_con_transferencias,
-
-    -- === METADATA ===
-    CONVERT(VARCHAR(10), GETDATE(), 23) AS fecha_consulta
-
-FROM UConectores.dbo.PR_MATRICULA m
-
--- LEFT JOIN para obtener datos de transferencias
-LEFT JOIN (
+  WITH EstudiantesMultiplesCareeras AS (
+    -- Identificar estudiantes con múltiples CODCLI
     SELECT
-        ar.codcli,
-        COUNT(*) AS cantidad_transferencias,
-        MIN(ar.ANO) AS primer_ano_transferencia,
-        MAX(ar.ANO) AS ultimo_ano_transferencia
+      m.RUT,
+      m.ANO_INGRESO_INSTITUCION,
+      m.CODCLI,
+      m.NOMBRE_CARRERA,
+      m.ANO as ano_matricula,
+      m.PERIODO as periodo_matricula,
+      -- Ordenar CODCLI por fecha de matrícula para identificar secuencia
+      ROW_NUMBER() OVER (
+        PARTITION BY m.RUT
+        ORDER BY m.ANO, m.PERIODO, m.CODCLI
+      ) as orden_matricula
+    FROM UConectores.dbo.PR_MATRICULA m
+    WHERE m.ANO_INGRESO_INSTITUCION >= 2022
+      AND m.TIPO_CARRERA = 'pregrado'
+      AND m.ESTADO_ACADEMICO IN ('VIGENTE', 'ELIMINADO', 'SUSPENDIDO')
+  ),
+  CambiosCarrera AS (
+    -- Identificar cambios de carrera
+    SELECT
+      actual.RUT,
+      actual.ANO_INGRESO_INSTITUCION,
+      anterior.CODCLI as CODCLI_ANTIGUO,
+      actual.CODCLI as CODCLI_NUEVO,
+      anterior.NOMBRE_CARRERA as CARRERA_ANTERIOR,
+      actual.NOMBRE_CARRERA as CARRERA_NUEVA
+    FROM EstudiantesMultiplesCareeras actual
+    LEFT JOIN EstudiantesMultiplesCareeras anterior
+      ON actual.RUT = anterior.RUT
+      AND anterior.orden_matricula = actual.orden_matricula - 1
+    WHERE actual.orden_matricula > 1  -- Solo los que tienen carrera anterior
+
+    UNION
+
+    -- Incluir casos de homologación directa (sin CODCLI anterior)
+    SELECT
+      m.RUT,
+      m.ANO_INGRESO_INSTITUCION,
+      NULL as CODCLI_ANTIGUO,
+      m.CODCLI as CODCLI_NUEVO,
+      NULL as CARRERA_ANTERIOR,
+      m.NOMBRE_CARRERA as CARRERA_NUEVA
+    FROM UConectores.dbo.PR_MATRICULA m
+    WHERE m.ANO_INGRESO_INSTITUCION >= 2022
+      AND m.TIPO_CARRERA = 'pregrado'
+      AND m.ESTADO_ACADEMICO IN ('VIGENTE', 'ELIMINADO', 'SUSPENDIDO')
+      AND m.RUT NOT IN (
+        SELECT RUT
+        FROM EstudiantesMultiplesCareeras
+        WHERE orden_matricula > 1
+      )
+      AND m.CODCLI IN (
+        SELECT DISTINCT ar.CODCLI
+        FROM UConectores.dbo.PR_ALUMNO_RAMO ar
+        WHERE ar.CONCEPTO IN ('cv', 'ho')
+      )
+  ),
+  TransferenciasResumen AS (
+    -- Calcular transferencias por CODCLI_NUEVO
+    SELECT
+      ar.CODCLI,
+      SUM(CASE WHEN ar.CONCEPTO = 'cv' THEN 1 ELSE 0 END) as cantidad_cv,
+      SUM(CASE WHEN ar.CONCEPTO = 'ho' THEN 1 ELSE 0 END) as cantidad_ho
     FROM UConectores.dbo.PR_ALUMNO_RAMO ar
-    WHERE ar.CONCEPTO = 'cv'  -- cv = convalidación/transferencia
-        AND ar.ANO >= 2022
-    GROUP BY ar.codcli
-) t ON m.CODCLI = t.codcli
+    WHERE ar.CONCEPTO IN ('cv', 'ho')
+    GROUP BY ar.CODCLI
+  )
 
-WHERE
-    m.ANO_INGRESO_INSTITUCION >= 2022
-    AND UPPER(m.TIPO_CARRERA) = 'PREGRADO'
-    AND m.ESTADO_ACADEMICO IN ('VIGENTE', 'ELIMINADO', 'SUSPENDIDO')
+  -- RESULTADO FINAL
+  SELECT
+    cc.ANO_INGRESO_INSTITUCION,
+    cc.RUT,
+    cc.CODCLI_ANTIGUO,
+    cc.CODCLI_NUEVO,
+    ISNULL(tr.cantidad_cv, 0) as Cantidad_ramos_convalidados_CODCLI_NUEVO,
+    ISNULL(tr.cantidad_ho, 0) as Cantidad_ramos_homologados_CODCLI_NUEVO,
+    cc.CARRERA_ANTERIOR,
+    cc.CARRERA_NUEVA,
+    CASE
+      WHEN cc.CODCLI_ANTIGUO IS NULL THEN 'Homologación desde otra institución'
+      ELSE 'Cambio de carrera interno'
+    END as tipo_caso,
+    CONVERT(VARCHAR(10), GETDATE(), 23) AS FECHA_CORTE
 
-ORDER BY
-    m.ANO_INGRESO_INSTITUCION DESC,
-    cantidad_transferencias DESC,
-    m.CODCLI;
+
+  FROM CambiosCarrera cc
+  LEFT JOIN TransferenciasResumen tr ON cc.CODCLI_NUEVO = tr.CODCLI
+
+  ORDER BY cc.ANO_INGRESO_INSTITUCION, cc.RUT, cc.CODCLI_NUEVO;
