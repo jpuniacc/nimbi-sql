@@ -4,7 +4,7 @@ Este documento contiene la documentación detallada de todos los campos utilizad
 
 ---
 
-## 📊 01.1 - Datos Operacionales con Estado Académico por Año
+## 📊 01 - Datos Operacionales con Estado Académico por Año
 
 ### 📋 **CAMPOS DE CONTACTO**
 - **MAIL_PERSONAL**: Correo electrónico personal del estudiante
@@ -29,8 +29,8 @@ Este documento contiene la documentación detallada de todos los campos utilizad
 - **CODIGO_PLAN**: Código del plan de estudios
 - **NOMBRE_PLAN**: Nombre del plan de estudios
 - **DURACION**: Duración de la carrera en semestres (calculada desde currículum)
-- **JORNADA**: Modalidad horaria (Diurno/Vespertino/Weekend)
-- **NIVEL_ALUMNO**: Nivel académico actual (1°, 2°, 3°, etc.)
+- **JORNADA**: Modalidad horaria (D: Diurno | V: Vespertino | AD: A Distancia | S: Semipresencial)
+- **NIVEL_ALUMNO**: Nivel académico actual, el cual toma el último con ramos pendientes. Esto quiere decir, si un codcli está en el cuarto año de su carrera, periodo podemos indicar que está en el nivel 8; sin embargo si el alumno tiene ramos pendientes del tercer semestre-periodo 1 (Primer semestre), el nivel que mostrará el registro será el 5.
 
 ### 📋 **CAMPOS DE EDUCACIÓN MEDIA**
 - **NEM**: Promedio de Notas de Enseñanza Media
@@ -81,13 +81,15 @@ Este documento contiene la documentación detallada de todos los campos utilizad
 
 ## 📊 02 - Notas y Asistencias por Sección
 
+*Datos de asistencias y notas desde el año 2022 al 2025, importante señalar que para AD (A distancia), tiene solo las notas hasta el 2024, la asistencia se mide en interacciones. Para A Distancia, estamos viendo como entregar las notas parciales 2025.*
+
 ### 📋 **INFORMACIÓN BÁSICA**
 - **ANIO**: Año académico de la asignatura
 - **PERIODO**: Período académico (1 o 2)
 - **CODCLI**: Código único interno del estudiante
 - **RUT**: RUT del estudiante
 - **NOMBRE_ALUMNO**: Nombre completo del estudiante
-- **ESTADO_ALUMNO**: Estado académico del alumno en el período
+- **ESTADO_ALUMNO**: Estado académico del alumno
 - **CARRERA_ALUMNO**: Carrera que cursa el estudiante
 - **CODRAMO_ALUMNO**: Código de la asignatura
 - **RAMO_ALUMNO**: Nombre de la asignatura
@@ -95,7 +97,7 @@ Este documento contiene la documentación detallada de todos los campos utilizad
 - **NOMBRE_PROFESOR**: Nombre del docente a cargo
 - **ID_SECCION**: Identificador único de la sección
 
-### 📋 **NOTAS PARCIALES**
+### 📋 **NOTAS PARCIALES** *(estructura fija, puede que ningún ramo tenga 7 notas parciales)*
 - **NOTA_1**: Primera nota parcial del estudiante
 - **PONDERACION_1**: Porcentaje de ponderación de la primera nota
 - **NOTA_2**: Segunda nota parcial del estudiante
@@ -115,7 +117,7 @@ Este documento contiene la documentación detallada de todos los campos utilizad
 - **PROMEDIO_PONDERADO_PARCIALES**: Promedio calculado con las ponderaciones de cada nota parcial
 
 ### 📋 **NOTAS FINALES**
-- **CANTIDAD_NOTAS_RAMO**: Número total de notas ingresadas en la asignatura
+- **CANTIDAD_NOTAS_RAMO**: Número total de notas que contiene la asignatura para el año-periodo
 - **NOTA_EXAMEN**: Nota del examen final
 - **PROMEDIO_FINAL**: Nota final de la asignatura
 - **ESTADO**: Estado final del estudiante en la asignatura (Aprobado/Reprobado/etc.)
@@ -165,7 +167,7 @@ Este documento contiene la documentación detallada de todos los campos utilizad
 
 ### 📋 **INFORMACIÓN DEL ESTUDIANTE**
 - **CODCLI**: Código único interno del estudiante
-- **NOMBRE_USUARIO**: Email institucional del estudiante que respondió
+- **NOMBRE_USUARIO**: Email institucional del estudiante que respondió (formato: usuario@uniacc.edu)
 
 ### 📋 **RESPUESTAS DE LA ENCUESTA**
 - **CODRESPUESTA**: Código de la respuesta seleccionada
@@ -194,7 +196,7 @@ Este documento contiene la documentación detallada de todos los campos utilizad
 ### 📋 **INFORMACIÓN ACADÉMICA**
 - **NOMBRE_CARRERA**: Carrera que cursa el estudiante
 - **NOMBRE_AREA**: Área académica de la carrera
-- **MODALIDAD**: Modalidad de enseñanza (Presencial/Online/Híbrida)
+- **MODALIDAD**: Modalidad de enseñanza (Presencial/Semipresencial/A Distancia)
 - **PERIODO**: Período académico de referencia
 
 ### 📋 **COSTOS BASE**
@@ -263,6 +265,29 @@ Este documento contiene la documentación detallada de todos los campos utilizad
 
 ---
 
+## 📊 06 - Estado Académico por Corte de Año
+
+### 📋 **INFORMACIÓN BÁSICA DEL ESTUDIANTE**
+- **RUT**: RUT completo del estudiante (formato: RUT-DV)
+
+### 📋 **INFORMACIÓN ACADÉMICA TEMPORAL**
+- **ANIO**: Año académico del registro de estado
+- **ESTADO_ACADEMICO**: Estado académico del estudiante en el año específico
+- **FECHA_REGISTRO_ESTADO_ACADEMICO**: Fecha del último cambio de estado académico (formato YYYYMMDD)
+
+### 📋 **CAMPOS DE CONTROL Y ORDENAMIENTO**
+- **ORDEN**: Orden de prelación
+- **FECHA_CORTE**: Fecha de ejecución de la consulta
+
+### 📋 **CRITERIOS DE FILTRADO**
+- **Tipo de Carrera**: Solo estudiantes de pregrado
+- **Período**: Desde el año 2022 en adelante
+- **Ordenamiento**: Por fecha de registro descendente (el más reciente primero)
+
+**Propósito:** Proporcionar un historial limpio de estados académicos por año, mostrando solo el estado más reciente de cada estudiante en cada año académico para análisis de tendencias y seguimiento longitudinal.
+
+---
+
 ## 📊 08 - Alumnos Transferencias y Cambios de Carrera
 
 ### 📋 **INFORMACIÓN BÁSICA DEL ESTUDIANTE**
@@ -301,6 +326,9 @@ El análisis se realiza por **CODCLI** (matrícula específica) considerando que
 - **Evaluación de reconocimiento académico**: Volumen y patrones de convalidaciones y homologaciones
 - **Seguimiento de trayectorias académicas**: Identificación de rutas de estudio no lineales
 
+### 📋 **CAMPOS DE CONTROL**
+- **FECHA_CORTE**: Fecha de ejecución de la consulta
+
 **Propósito:** Análisis detallado de transferencias y convalidaciones considerando cambios de carrera internos y reconocimiento de estudios externos, permitiendo evaluar la movilidad estudiantil y efectividad de procesos de reconocimiento académico.
 
 ---
@@ -335,8 +363,8 @@ El análisis se realiza por **CODCLI** (matrícula específica) considerando que
 - **Collation**: Campos con Modern_Spanish_CI_AS pero datos insertados con encoding incorrecto
 - **Solución recomendada**: Aplicar funciones REPLACE para corregir caracteres problemáticos
 
-**Propósito:** Proporcionar información básica de procedencia educacional de estudiantes UNIACC, enfocándose en la relación estudiante-colegio de origen para análisis de feeder schools y caracterización de la población estudiantil
+**Propósito:** Proporcionar información básica de procedencia educacional de estudiantes UNIACC, enfocándose en la relación estudiante-colegio de origen para análisis de feeder schools y caracterización de la población estudiantil.
 
 ---
 
-*Última actualización: 2025-09-22*
+*Última actualización: 2025-09-24*
