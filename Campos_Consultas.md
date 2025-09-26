@@ -367,4 +367,77 @@ El análisis se realiza por **CODCLI** (matrícula específica) considerando que
 
 ---
 
+---
+
+## 📊 10 - Análisis Tabla Caracterización Estudiantil
+
+*Análisis integral de los datos de caracterización socioeconómica y académica de estudiantes desde el año 2022 en adelante.*
+
+### 📋 **CAMPOS DE IDENTIFICACIÓN TEMPORAL**
+- **ANO**: Año académico de la encuesta de caracterización
+- **RUT**: RUT completo del estudiante (formato: RUT-DV)
+- **DV**: Dígito verificador del RUT
+- **RUT_2**: Campo adicional de RUT (posible duplicado o formato alternativo)
+
+### 📋 **INFORMACIÓN PERSONAL Y DEMOGRÁFICA**
+- **[Con respecto a UD ¿cuál es su actual estado civil?]**: Estado civil del estudiante al momento de la encuesta
+
+### 📋 **ANTECEDENTES EDUCACIONALES DE ENSEÑANZA MEDIA**
+- **[Indique la dependencia administrativa de su establecimiento de egreso de la Enseñanza Media o Secundaria]**: Tipo de dependencia del colegio (Municipal, Particular Subvencionado, Particular Pagado, etc.)
+- **[Indíquenos el tipo de Enseñanza Media o Secundaria de egreso]**: Modalidad de enseñanza media (Científico-Humanista, Técnico-Profesional, etc.)
+- **[Indique el tipo de establecimiento en el cual cursó la Enseñanza Media o Secundaria]**: Clasificación del tipo de establecimiento educacional
+- **[Indíquenos la especialidad de la Enseñanza Media o Secundaria Técnico-Profesional]**: Especialidad técnica cursada (solo para egresados TP)
+- **[¿En qué año egresó de la Enseñanza Media o Secundaria?]**: Año de egreso de la educación media
+
+### 📋 **RENDIMIENTO ACADÉMICO PREVIO**
+- **[Indique el promedio de notas que obtuvo de primero a cuarto medio (separe los decimales con un punto)]**: Promedio de Notas de Enseñanza Media (NEM)
+- **[¿Cuántos puntos de promedio obtuvo entre Lenguaje y Matemáticas?]**: Puntaje promedio en pruebas de admisión PSU/PAES
+
+### 📋 **SITUACIÓN LABORAL Y ECONÓMICA**
+- **[¿Desempeña un trabajo remunerado o actividad que le reporte ingresos?]**: Indicador de trabajo remunerado del estudiante
+- **[Renta Ingresos]**: Rango de ingresos económicos del estudiante
+- **[Indique el monto líquido promedio de los últimos 3 meses que recibió como ingreso por su trabajo o actividad renumerada]**: Detalle específico de ingresos mensuales
+
+### 📋 **ANTECEDENTES FAMILIARES Y EDUCACIONALES**
+- **[Indique el nivel educacional alcanzado por su padre]**: Máximo nivel educacional paterno
+- **[Indique el nivel educacional alcanzado por su madre]**: Máximo nivel educacional materno
+- **[¿Pertenece UD a la primera generación de su núcleo familiar en acceder a la Educación Superior?]**: Indicador de primera generación universitaria
+
+### 📋 **FINANCIAMIENTO DE ESTUDIOS**
+- **[¿Qué familiar pagará principalmente sus estudios?]**: Principal responsable del financiamiento educativo
+- **[Indique cuál de sus padres pagará sus estudios]**: Especificación de financiamiento parental
+
+### 📋 **DIVERSIDAD E IDENTIDAD CULTURAL**
+- **[¿Se considera perteneciente a alguno de los siguientes pueblos originarios?]**: Pertenencia a pueblos originarios
+
+### 📋 **PREFERENCIAS UNIVERSITARIAS**
+- **[Indique qué lugar ocupaba Universidad UNIACC dentro de sus opciones al momento de elegir dónde estudiar]**: Posición de UNIACC en las preferencias del estudiante (1era, 2da, 3era opción, etc.)
+
+### 📋 **CARACTERÍSTICAS DEL ANÁLISIS**
+- **Período de análisis**: Años 2022 en adelante (ANO >= '2022')
+- **Población objetivo**: Estudiantes que completaron encuesta de caracterización socioeconómica
+- **Tipo de análisis**: Descriptivo, distribuciones porcentuales, análisis cruzados
+- **Indicadores clave**: Trabajo remunerado, primera generación, procedencia educacional, preferencias universitarias
+
+### 📋 **ESTRUCTURA DEL ANÁLISIS SQL**
+1. **Resumen general**: Distribución por años y calidad de datos
+2. **Análisis socioeconómico**: Estado civil, trabajo, ingresos, primera generación
+3. **Análisis educacional**: Dependencia, tipo enseñanza media, promedios, puntajes
+4. **Análisis familiar**: Nivel educacional padres, financiamiento
+5. **Análisis diversidad**: Pertenencia pueblos originarios
+6. **Análisis preferencias**: Posición UNIACC en opciones universitarias
+7. **Análisis cruzados**: Correlaciones entre variables
+8. **Indicadores consolidados**: Resumen ejecutivo por año
+
+### 📋 **CASOS DE USO**
+- **Caracterización socioeconómica**: Perfil de vulnerabilidad y nivel socioeconómico estudiantil
+- **Análisis de equidad**: Evaluación de diversidad y primera generación universitaria
+- **Estrategias de retención**: Identificación de factores de riesgo académico
+- **Políticas institucionales**: Desarrollo de programas de apoyo estudiantil
+- **Marketing educacional**: Análisis de percepción y posicionamiento de UNIACC
+
+**Propósito:** Análisis integral de caracterización estudiantil para informar políticas institucionales, programas de apoyo y estrategias de retención basadas en perfiles socioeconómicos, académicos y de preferencias universitarias.
+
+---
+
 *Última actualización: 2025-09-24*

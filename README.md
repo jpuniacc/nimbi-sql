@@ -6,8 +6,8 @@ Este repositorio contiene las consultas SQL y documentación para el sistema de 
 
 ```
 ├── 01_Nimbi/                    # Consultas principales del sistema Nimbi
-│   ├── 01_Datos_Operacionales_Estado_Academico_Corte_Anio.sql
-│   ├── 02_Notas_Asistencias_Ponderaciones.sql
+│   ├── 1__Identificadores_y_data_operacional.sql
+│   ├── 4__Notas_y_asistencia.sql
 │   ├── 03_Encuesta_Docente.sql
 │   ├── 04_informe_finanzas.sql
 │   ├── 05_beneficios_alumnos.sql
