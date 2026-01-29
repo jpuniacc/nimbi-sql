@@ -27,5 +27,3 @@ select CODCLI,
        CONVERT(VARCHAR(10), GETDATE(), 23) AS FECHA_CORTE
 from [DWH_DAI_Server].UConectores.dbo.REP_REPORTE_FINANZAS
 order by PERIODO desc;
-
-

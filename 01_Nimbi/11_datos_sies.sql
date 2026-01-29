@@ -8,3 +8,4 @@ select periodo,
        sem_ing_ori
 from [DWH_DAI_Server].DWH_DAI.dbo.ft_sies
 where periodo >= 2022
+order by periodo asc
